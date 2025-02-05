@@ -1,7 +1,7 @@
 // El principal objetivo de este desafío es fortalecer tus habilidades en lógica de programación. Aquí deberás desarrollar la lógica para resolver el problema.
 let amigos = [];
 
-//Función para añadir amigo
+//Función para añadir amigo, getElementsById sirve para obtener un elemento del DOM (HTML) por su id
 function agregarAmigo() {
     let amigo = document.getElementById("amigo").value;
     
@@ -34,43 +34,83 @@ function actualizarListaAmigos() {
     });
 }
 
-//Función para sortear amigos
+//Función para validar sorteo de amigos
 function sortearAmigos() {
     if (amigos.length < 3) {
         alert("Deben haber al menos 3 amigos en la lista para realizar sorteo");
+        return;
     }
 
-    const asignaciones = {};
-    const copiaAmigos = [...amigos];
+    let asignaciones = {};
+    let copiaAmigos = [...amigos];
 
-    amigos.forEach((amigo) => {
-        let opciones = copiaAmigos.filter(opcion => opcion !== amigo);    
+   
 
-        if (opciones.length === 0) {
-            alert("No se puede realizar el sorteo");
-            return;
+    //comprobar que no se asignen a sí mismos
+    let intentos = 0;
+    while (intentos < 100) {
+        let valido = true;
+        for (let i = 0; i < amigos.length; i++) {
+            if (amigos[i] === copiaAmigos[i]) {
+                valido = false;
+                break;
+            }
         }
+        if (valido) break;
+        copiaAmigos = copiaAmigos.sort(() => Math.random() - 0.5);
+        intentos++;
+    }
 
-        const elegido = opciones[Math.floor(Math.random() * opciones.length)];
-        asignaciones[amigo] = elegido;
-        copiaAmigos.splice(copiaAmigos.indexOf(elegido), 1);
+    if (intentos >= 100) {
+        alert("No se puede realizar el sorteo");
+        return;
+
+    }
+
+    //Asignar los amigos
+    amigos.forEach((amigo, index) => {
+        asignaciones[amigo] = copiaAmigos[index];
     });
 
     mostrarResultados(asignaciones);
 }
 
-//Función para mostrar resultados
+//Función para realizar sorteo
+
+//function realizarSorteo() {
+//    const copiaAmigos = [...amigos];
+//    const asignaciones = {};
+//
+//    for (let amigo of amigos) {
+//        let opciones = [...copiaAmigos];
+//        const elegido = opciones[Math.floor(Math.random() * opciones.length)];
+//
+//        asignaciones[amigo] = elegido;
+//
+//        //Comprobando que no haya conflictos
+//        if (Object.keys(asignaciones).length === amigos.length) {
+//            return asignaciones;
+//        }
+//
+//
+//
+//        const valoresUnicos = new Set(Object.values(asignaciones));
+//        if (valoresUnicos.size < amigos.length) {
+//            return null;
+//        }
+//    }
+//    return asignaciones;
+//}
+
 function mostrarResultados(asignaciones) {
-    const resultados = document.getElementById("resultados");
-    resultados.innerHTML = '';
+    const resultado = document.getElementById('resultado');
+    resultado.innerHTML = '';
 
     for (const [amigo, asignado] of Object.entries(asignaciones)) {
         const li = document.createElement("li");
         li.textContent = `${amigo} le regala a ${asignado}`;
-        resultados.appendChild(li);
+        resultado.appendChild(li);
+
     }
-
-
 }
-
 
